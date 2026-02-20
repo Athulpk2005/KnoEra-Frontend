@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+    --font-display: "Urbanist", sans-serif;
+    --breakpoint-3xl: 1920px;
+    --color-primary: #10B981;
+
+    --animate-shimmer: shimmer 2s linear infinite;
+    --animate-fade-in-down: fade-in-down 0.3s ease-out;
+
+    @keyframes shimmer {
+        0% {
+            transform: translateX(-200%) skewX(12deg);
+        }
+
+        100% {
+            transform: translateX(200%) skewX(12deg);
+        }
+    }
+
+    @keyframes fade-in-down {
+        0% {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes scale-up {
+        0% {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    --animate-scale-up: scale-up 0.2s ease-out;
+}
+
+@layer base {
+    html {
+        font-family: var(--font-display);
+    }
+
+    body {
+        background-color: #ffffff;
+    }
+}
