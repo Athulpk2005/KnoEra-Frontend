@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { User, Mail, Calendar, Shield, Lock, Save, Eye, EyeOff } from 'lucide-react'
+import { User, Mail, Calendar, Shield, Lock, Save, Eye, EyeOff, Key } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import authService from '../../services/authService'
 import toast from 'react-hot-toast'
@@ -18,6 +18,10 @@ const ProfilePage = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  
+  const [geminiApiKey, setGeminiApiKey] = useState(localStorage.getItem('gemini_api_key') || '')
+  const [savingApiKey, setSavingApiKey] = useState(false)
+  const [showApiKey, setShowApiKey] = useState(false)
 
   const handleSaveProfile = async (e) => {
     e.preventDefault()
@@ -65,6 +69,24 @@ const ProfilePage = () => {
       toast.error(error?.message || 'Failed to change password')
     } finally {
       setChangingPassword(false)
+    }
+  }
+
+  const handleSaveApiKey = async (e) => {
+    e.preventDefault()
+    setSavingApiKey(true)
+    try {
+      if (geminiApiKey.trim()) {
+        localStorage.setItem('gemini_api_key', geminiApiKey.trim())
+        toast.success('API Key saved successfully to your browser')
+      } else {
+        localStorage.removeItem('gemini_api_key')
+        toast.success('API Key removed. System default will be used.')
+      }
+    } catch (error) {
+      toast.error('Failed to save API key')
+    } finally {
+      setSavingApiKey(false)
     }
   }
 
@@ -319,6 +341,98 @@ const ProfilePage = () => {
                     <>
                       <Lock size={14} />
                       Update Password
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+
+            {/* AI Settings / API Key */}
+            <form
+              onSubmit={handleSaveApiKey}
+              className="bg-white rounded-3xl border border-emerald-200/80 shadow-sm p-6 space-y-5"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <Key size={18} />
+                </div>
+                <div>
+                  <h2 className="text-base font-black text-slate-900">
+                    AI Settings (Gemini API Key)
+                  </h2>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Use your own Gemini API key for all AI features.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    Gemini API Key
+                  </label>
+                  <a 
+                    href="https://aistudio.google.com/app/apikey" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700 underline underline-offset-2 uppercase tracking-wider"
+                  >
+                    Get Key from Google AI Studio
+                  </a>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showApiKey ? 'text' : 'password'}
+                    value={geminiApiKey}
+                    onChange={(e) => setGeminiApiKey(e.target.value)}
+                    placeholder="Enter your Gemini API key (AIza...)"
+                    className="w-full px-3 pr-10 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400 font-medium"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowApiKey((prev) => !prev)}
+                    className="absolute inset-y-0 right-2 flex items-center text-slate-400 hover:text-slate-600"
+                  >
+                    {showApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                
+                {/* Instructions Box */}
+                <div className="mt-3 p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
+                  <p className="text-[11px] font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
+                    <span className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[8px]">?</span>
+                    How to get your API Key:
+                  </p>
+                  <ol className="text-[11px] text-slate-600 font-medium space-y-1 ml-4 list-decimal">
+                    <li>Go to <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-emerald-600 font-bold hover:underline">Google AI Studio</a>.</li>
+                    <li>Sign in with your Google Account.</li>
+                    <li>Click the <strong>"Create API key"</strong> button.</li>
+                    <li>Copy the key and paste it in the field above.</li>
+                  </ol>
+                  <p className="text-[10px] text-slate-400 font-bold italic mt-2">
+                    Note: Your API key is stored only in your browser's local storage for security.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center text-[11px] text-slate-500 font-medium">
+                <p>
+                  Leave empty to use the system's default API key (if available).
+                </p>
+                <button
+                  type="submit"
+                  disabled={savingApiKey}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-black uppercase tracking-widest hover:bg-slate-800 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
+                >
+                  {savingApiKey ? (
+                    <>
+                      <div className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save size={14} />
+                      Save API Key
                     </>
                   )}
                 </button>

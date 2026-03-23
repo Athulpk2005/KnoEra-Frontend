@@ -24,6 +24,19 @@ const DashboardPage = () => {
       }
     };
     fetchDashboardData();
+
+    // Check for new user prompt
+    const isNewUser = localStorage.getItem('is_new_user');
+    const existingApiKey = localStorage.getItem('gemini_api_key');
+
+    if (isNewUser === 'true' && !existingApiKey) {
+      toast('Welcome! Start by adding your Gemini API key in Profile settings to unlock AI features.', {
+        icon: '🚀',
+        duration: 6000,
+        position: 'top-center',
+      });
+      localStorage.removeItem('is_new_user');
+    }
   }, []);
 
   const handleClearActivity = async () => {

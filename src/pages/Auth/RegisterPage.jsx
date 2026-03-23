@@ -26,6 +26,7 @@ function RegisterPage() {
     setLoading(true)
     try {
       await authService.register(username, email, password)
+      localStorage.setItem('is_new_user', 'true')
       toast.success('Registered in successfully! Please Login')
       navigate('/login')
     } catch (error) {

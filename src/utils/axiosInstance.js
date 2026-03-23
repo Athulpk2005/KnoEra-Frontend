@@ -15,9 +15,16 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
     (config) => {
         const accessToken = localStorage.getItem("token");
+        const geminiApiKey = localStorage.getItem("gemini_api_key");
+
         if (accessToken) {
             config.headers.Authorization = `Bearer ${accessToken}`;
         }
+
+        if (geminiApiKey) {
+            config.headers["x-api-key"] = geminiApiKey;
+        }
+
         return config;
     },
     (error) => {
